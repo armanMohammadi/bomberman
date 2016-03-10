@@ -5,7 +5,6 @@ $(document).ready(function () {
     //Canvas stuff
     var $canvas = $("#canvas");
     var canvas = $canvas[0];
-    var ctx = canvas.getContext("2d");
     var w = $canvas.width();
     var h = $canvas.height();
 
@@ -73,20 +72,16 @@ $(document).ready(function () {
         }
         var counter = 0;
         $('#main-background').children('.wall-block').each(function () {
-            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
             $(this).css('position', 'absolute');
             $(this).css('left', blocks[counter].x + 'px');
             $(this).css('top', blocks[counter].y + 'px');
             $(this).css('id', blocks[counter].id);
             counter++;
-
         });
-
-
     }
 
     function make_zombies() {
-        var i ;
+        var i;
         for (i = 0; i < zombies_num; i++) {
             while (true) {
                 var temp1 = Math.floor(Math.random() * map.length);
@@ -117,7 +112,6 @@ $(document).ready(function () {
             zombie.after(zombie.clone());
         var counter = 0;
         $('#main-background').children('.zombie-block').each(function () {
-            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
             $(this).css('position', 'absolute');
             $(this).css('visibility', 'visible');
             $(this).css('left', zombies[counter].x + 'px');
@@ -129,8 +123,8 @@ $(document).ready(function () {
 
     function make_bomberman() {
         while (true) {
-            temp1 = Math.floor(Math.random() * map.length);
-            temp2 = Math.floor(Math.random() * map[temp1].length);
+            var temp1 = Math.floor(Math.random() * map.length);
+            var temp2 = Math.floor(Math.random() * map[temp1].length);
             if (map[temp1][temp2] != "block") {
                 var temp_add_bomberman_con = true;
                 for (var j = 0; j < zombies.length; j++) {
@@ -150,37 +144,26 @@ $(document).ready(function () {
             }
         }
         var bomberman_block = $('.bomberman-block');
-        //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
         bomberman_block.css('position', 'absolute');
         bomberman_block.css('visibility', 'visible');
         bomberman_block.css('left', bomberman.x + 'px');
         bomberman_block.css('top', bomberman.y + 'px');
-
-
     }
 
     function paint_zombies() {
-
-
         var counter = 0;
-        $('#main-background').children('.zombie-block').each(function (i) {
-            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+        $('#main-background').children('.zombie-block').each(function () {
             $(this).css('position', 'absolute');
             $(this).css('left', zombies[counter].x + 'px');
             $(this).css('top', zombies[counter].y + 'px');
-
             counter++;
-
         });
-
     }
 
     function paint_bomberman() {
         var bomberman_block = $('.bomberman-block');
-        //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
         bomberman_block.css('left', bomberman.x + 'px');
         bomberman_block.css('top', bomberman.y + 'px');
-
     }
 
     function paint_bombs() {
@@ -193,41 +176,11 @@ $(document).ready(function () {
                 explosion_num += bombs[i].explosions.length;
             }
         }
-        //$('#main-background').children('.zombie-block').count();
-        //var counter = 0;
-        //$('#main-background').children('.zombie-block').each(function (i) {
-        //    //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-        //    if(counter<bombs.length) {
-        //        if(bombs[counter].mode=="pre_explosion"){
-        //
-        //        }
-        //        $(this).css('position', 'absolute');
-        //        $(this).css('left', zombies[counter].x + 'px');
-        //        $(this).css('top', zombies[counter].y + 'px');
-        //    }else{
-        //        $(this).remove();
-        //    }
-        //    counter++;
-        //
-        //});
-    }
-
-    function paint_exploration(x, y) {
-        ctx.beginPath();
-        ctx.arc(x + Math.floor(cw / 2), y + Math.floor(cw / 2), Math.floor(cw / 2), 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'yellow';
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x + Math.floor(cw / 2), y + Math.floor(cw / 2), Math.floor(cw / 4), 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'orange';
-        ctx.fill();
     }
 
     function set_zombies_dir() {
         for (var i = 0; i < zombies.length; i++) {
-
-            random_dir = Math.floor(Math.random() * 4);
-
+            var random_dir = Math.floor(Math.random() * 4);
             if (random_dir == 0)
                 zombies[i].dir = "right";
             else if (random_dir == 1)
@@ -250,10 +203,8 @@ $(document).ready(function () {
                         }
                     }
                 }
-
             }
             i--;
-
         }
     }
 
@@ -329,13 +280,14 @@ $(document).ready(function () {
     }
 
     function check_bombs() {
-        for (var i = 0; i < bombs.length; i++) {
+        var i, j, k;
+        for (i = 0; i < bombs.length; i++) {
             if (bombs[i].time > timer - 200) {
                 bombs[i].mode = "pre_explosion";
             }
             else if (bombs[i].time < timer - 200 && bombs[i].time > timer - 230) {
                 bombs[i].mode = "post_explosion";
-                for (var j = 0; j <= bombs[i].r; j++) {
+                for (j = 0; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw) + j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
@@ -344,18 +296,17 @@ $(document).ready(function () {
                         y: bombs[i].y,
                         t: timer - bombs[i].time
                     });
-                    for (var k = 0; k < zombies.length; k++) {
+                    for (k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
                     if (3 * (Math.floor(bombs[i].x / cw) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw)) == bomberman.py) {
                         console.log("game over");
-                        // init();
                         return;
                     }
                 }
-                for (var j = 1; j <= bombs[i].r; j++) {
+                for (j = 1; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw) - j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
@@ -364,20 +315,17 @@ $(document).ready(function () {
                         y: bombs[i].y,
                         t: timer - bombs[i].time
                     });
-                    for (var k = 0; k < zombies.length; k++) {
+                    for (k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
                     if (3 * (Math.floor(bombs[i].x / cw) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw)) == bomberman.py) {
                         console.log("game over");
-                        // init();
                         return;
                     }
-
-
                 }
-                for (var j = 1; j <= bombs[i].r; j++) {
+                for (j = 1; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) + j] == "block") {
                         break;
                     }
@@ -386,20 +334,19 @@ $(document).ready(function () {
                         y: bombs[i].y + j * cw,
                         t: timer - bombs[i].time
                     });
-                    for (var k = 0; k < zombies.length; k++) {
+                    for (k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) + j) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
                     if (3 * (Math.floor(bombs[i].x / cw) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw) + j) == bomberman.py) {
                         console.log("game over");
-                        //init();
                         return;
                     }
 
 
                 }
-                for (var j = 1; j <= bombs[i].r; j++) {
+                for (j = 1; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) - j] == "block") {
                         break;
                     }
@@ -409,7 +356,7 @@ $(document).ready(function () {
                         t: timer - bombs[i].time
                     });
 
-                    for (var k = 0; k < zombies.length; k++) {
+                    for (k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) - j) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
@@ -477,4 +424,4 @@ $(document).ready(function () {
         else if (key == "32") b = true;
         else d = "";
     })
-})
+});
