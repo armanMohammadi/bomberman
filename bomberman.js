@@ -136,7 +136,6 @@ $(document).ready(function () {
             zombie.after(zombie.clone());
         }
         var counter = 0;
-        zombie = $('.zombie-block');
         $('#main-background').children('.zombie-block').each(function (i) {
             //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
             $(this).css('position', 'absolute');
@@ -181,14 +180,24 @@ $(document).ready(function () {
 
         var counter = 0;
         $('#main-background').children('.zombie-block').each(function (i) {
-            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-            $(this).css('position', 'absolute');
-            $(this).css('left', zombies[counter].x + 'px');
-            $(this).css('top', zombies[counter].y + 'px');
+                //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                if (counter < zombies.length) {
 
-            counter++;
+                    $(this).css('position', 'absolute');
+                    $(this).css('left', zombies[counter].x + 'px');
+                    $(this).css('top', zombies[counter].y + 'px');
+                }
+                else if (counter == zombies.length) {
+                    $(this).css('visibility', 'hidden');
+                }
+                else {
+                    $(this).remove();
+                }
+                counter++;
 
-        });
+            }
+        )
+        ;
 
     }
 
@@ -201,15 +210,33 @@ $(document).ready(function () {
     }
 
     function paint_bombs() {
-        var bomb_num=0;
-        var explosion_num=0;
-        for(var i=0;i<bombs.length;i++){
-            if(bombs[i].mode=="pre_explosion"){
-                bomb_num++;
+        for (var i = 0; i < bombs.length; i++) {
+            if (bombs[i].mode == "pre_explosion") {
+                if (!bombs[i].visibility) {
+                    $('.bomb-block').after($('.bomb-block').clone());
+                    bombs[i].visibility = true;
+                }
             }else{
-                explosion_num+=bombs[i].explosions.length;
+
+
             }
         }
+        var counter = 0;
+        $('#main-background').children('.bomb-block').each(function (i) {
+            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+            if (counter < bombs.length) {
+                $(this).css('position', 'absolute');
+                $(this).css('visibility', 'visible');
+                $(this).css('left', bombs[counter].x + 'px');
+                $(this).css('top', bombs[counter].y + 'px');
+            } else if (counter == bombs.length) {
+                $(this).css('visibility', 'hidden');
+            }
+            else {
+                $(this).remove();
+            }
+            counter++;
+        });
         //$('#main-background').children('.zombie-block').count();
         //var counter = 0;
         //$('#main-background').children('.zombie-block').each(function (i) {
@@ -348,15 +375,15 @@ $(document).ready(function () {
     function check_bombs() {
         for (var i = 0; i < bombs.length; i++) {
             if (bombs[i].time > timer - 200) {
-                bombs[i].mode="pre_explosion";
+                bombs[i].mode = "pre_explosion";
             }
             else if (bombs[i].time < timer - 200 && bombs[i].time > timer - 230) {
-                bombs[i].mode="post_explosion";
+                bombs[i].mode = "post_explosion";
                 for (var j = 0; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw) + j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x + j * cw, y:bombs[i].y, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({x: bombs[i].x + j * cw, y: bombs[i].y, t: timer - bombs[i].time});
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -372,7 +399,7 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw) - j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x - j * cw,y:bombs[i].y, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({x: bombs[i].x - j * cw, y: bombs[i].y, t: timer - bombs[i].time});
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -390,7 +417,7 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) + j] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x, y:bombs[i].y + j * cw, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({x: bombs[i].x, y: bombs[i].y + j * cw, t: timer - bombs[i].time});
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) + j) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -408,7 +435,7 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) - j] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x, y:bombs[i].y - j * cw, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({x: bombs[i].x, y: bombs[i].y - j * cw, t: timer - bombs[i].time});
 
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) - j) == zombies[k].py) {
@@ -428,7 +455,6 @@ $(document).ready(function () {
             }
             else {
                 bombs.splice(i, 1);
-                $('.bomb-block')[i].remove();
             }
 
 
@@ -451,7 +477,9 @@ $(document).ready(function () {
                 time: timer,
                 r: itemr,
                 explosions: [],
-                mode:"pre_explosion"
+                mode: "pre_explosion",
+                visibility: false,
+                exp : false
             });
         }
         check_bombs();
