@@ -1,0 +1,43 @@
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#main-background {
+	width: 450px;
+	height: 450px;
+	background-color: green;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+}
+
+.block {
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+}
+
+.wall-block {
+	background-color: #555;
+}
+
+.zombie-block {
+	background-color: red;
+    visibility: hidden;
+
+}
+
+.bomberman-block {
+	background-color: #0a13ff;
+    visibility: hidden;
+}
+.bomb-block {
+	background-color: rgba(0, 0, 6, 0.97);
+    visibility: hidden;
+}
+
