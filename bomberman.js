@@ -86,11 +86,11 @@ $(document).ready(function () {
     }
 
     function make_zombies() {
-
-        for (var i = 0; i < zombies_num; i++) {
+        var i ;
+        for (i = 0; i < zombies_num; i++) {
             while (true) {
-                temp1 = Math.floor(Math.random() * map.length);
-                temp2 = Math.floor(Math.random() * map[temp1].length);
+                var temp1 = Math.floor(Math.random() * map.length);
+                var temp2 = Math.floor(Math.random() * map[temp1].length);
                 if (map[temp1][temp2] != "block") {
                     var temp_add_zombies_con = true;
                     for (var j = 0; j < zombies.length; j++) {
@@ -109,16 +109,14 @@ $(document).ready(function () {
                         break;
                     }
                 }
-
             }
         }
+
         var zombie = $('.zombie-block');
-        for (var i = 0; i < zombies.length - 1; i++) {
+        for (i = 0; i < zombies.length - 1; i++)
             zombie.after(zombie.clone());
-        }
         var counter = 0;
-        zombie = $('.zombie-block');
-        $('#main-background').children('.zombie-block').each(function (i) {
+        $('#main-background').children('.zombie-block').each(function () {
             //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
             $(this).css('position', 'absolute');
             $(this).css('visibility', 'visible');
@@ -126,9 +124,7 @@ $(document).ready(function () {
             $(this).css('top', zombies[counter].y + 'px');
             $(this).css('id', zombies[counter].id);
             counter++;
-
         });
-
     }
 
     function make_bomberman() {
