@@ -1,7 +1,12 @@
 /**
  * Created by ����� on 04/03/2016.
  */
-$(document).ready(function () {
+run_game = function () {
+    //Game variables
+    var width = $('input[name=game-width]').val();
+    var height = $('input[name=game-height]').val();
+    var zombies_num = $('input[name=game-zombies]').val();
+
     //Canvas stuff
     var $canvas = $("#canvas");
     var canvas = $canvas[0];
@@ -15,7 +20,6 @@ $(document).ready(function () {
     var b;
     var score;
     var zombies;
-    var zombies_num = 2;
 
     //Lets create the snake now
     var grasses; //an array of cells to make up the snake
@@ -415,4 +419,4 @@ $(document).ready(function () {
         else if (key == "32") b = true;
         else d = "";
     })
-});
+};

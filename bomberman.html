@@ -4,27 +4,37 @@
     <head>
         <link rel="stylesheet" type="text/css" href="bomberman.css">
         <script type="text/javascript" src="jquery-2.2.1.min.js"></script>
-        <!--<script src="bomberman.js" type="text/javascript"></script>-->
+        <script src="bomberman.js" type="text/javascript"></script>
+        <script src="modal.js" type="text/javascript"></script>
         <meta charset="UTF-8">
         <title>jk</title>
     </head>
     <body>
-        <div id="main-background">
+        <div class="game" id="main-background">
             <div class="wall-block block"></div>
             <div class="zombie-block block"></div>
             <div class="bomberman-block block"></div>
             <div class="bomb-block block"></div>
         </div>
-        <div id="containter">
-            <div id="content">
-                any text<br>
-                any height<br>
-                any content, for example generated from DB<br>
-                everything is vertically centered
-            </div>
+        <div class="modal">
+            <p>Hi <br> You can see a bro ! </p>
+            <button class="start-button">Start </button>
+            <label>
+                Width:
+                <input name="game-width" type="number" value="15">
+            </label>
+            <label>
+                Height:
+                <input name="game-height" type="number" value="15">
+            </label>
+            <label>
+                Zombies:
+                <input name="game-zombies" type="number" value="2">
+            </label>
+
+
+
         </div>
-
-
 
         <!-- Lets make a simple snake game -->
         <canvas id="canvas" width="450" height="450"></canvas>
