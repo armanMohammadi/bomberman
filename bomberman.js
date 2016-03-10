@@ -3,20 +3,15 @@
  */
 run_game = function () {
     //Game variables
+    var game_ground = $('.game');
     var each_cell_length = 30;
     var width = $('input[name=game-width]').val();
     var height = $('input[name=game-height]').val();
     var zombies_num = $('input[name=game-zombies]').val();
     var w = width * each_cell_length;
     var h = height * each_cell_length;
-    //Canvas stuff
-    //var $canvas = $("#canvas");
-    //var canvas = $canvas[0];
-
-
 
     //Lets save the cell width in a variable for easy control
-
     var d;
     var bomberman;
     var b;
@@ -73,8 +68,8 @@ run_game = function () {
             }
         }
         var wall = $('.wall-block');
-        for (i = 0; i < blocks.length - 1; i++) {
-            wall.after(wall.clone());
+        for (i = 0; i < blocks.length; i++) {
+            game_ground.append(wall.clone());
         }
         var counter = 0;
         $('#main-background').children('.wall-block').each(function () {
@@ -114,8 +109,8 @@ run_game = function () {
         }
 
         var zombie = $('.zombie-block');
-        for (i = 0; i < zombies.length - 1; i++)
-            zombie.after(zombie.clone());
+        for (i = 0; i < zombies.length; i++)
+            game_ground.append(zombie.clone());
         var counter = 0;
         $('#main-background').children('.zombie-block').each(function () {
             $(this).css('position', 'absolute');
@@ -150,6 +145,7 @@ run_game = function () {
             }
         }
         var bomberman_block = $('.bomberman-block');
+        game_ground.append(bomberman_block);
         bomberman_block.css('position', 'absolute');
         bomberman_block.css('visibility', 'visible');
         bomberman_block.css('left', bomberman.x + 'px');
