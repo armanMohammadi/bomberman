@@ -1,30 +1,13 @@
-//$(document).on("ready", function () {
-//    var wall = $('.wall-block');
-//    for (var i = 0; i < 5; i++) {
-//        wall.after(wall.clone());
-//    }
-//    var counter =0;
-//    wall.css("background-color", "yellow");
-//    $('#main-background').children('.wall-block').each(function (i) {
-//
-//        $(this).css('left',counter+ 'px');
-//        $(this).css('top', '30px');
-//        counter += 35;
-//
-//
-//    });
-//});
-
-
 /**
- * Created by ÂÑãÇä on 04/03/2016.
+ * Created by ï¿½ï¿½ï¿½ï¿½ï¿½ on 04/03/2016.
  */
 $(document).ready(function () {
     //Canvas stuff
-    var canvas = $("#canvas")[0];
+    var $canvas = $("#canvas");
+    var canvas = $canvas[0];
     var ctx = canvas.getContext("2d");
-    var w = $("#canvas").width();
-    var h = $("#canvas").height();
+    var w = $canvas.width();
+    var h = $canvas.height();
 
     //Lets save the cell width in a variable for easy control
     var cw = 30;
@@ -477,6 +460,5 @@ $(document).ready(function () {
         else if (key == "40") d = "down";
         else if (key == "32") b = true;
         else d = "";
-        //The snake is now keyboard controllable
     })
 })
