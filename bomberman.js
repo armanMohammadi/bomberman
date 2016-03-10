@@ -41,7 +41,7 @@ $(document).ready(function () {
         make_zombies();
         make_bomberman();
 
-        ////every 60ms
+        ////every 60msw
         var game_loop;
         if (typeof game_loop != "undefined")
             clearInterval(game_loop);
@@ -51,15 +51,16 @@ $(document).ready(function () {
     init();
     //Lets paint the snake now
     function make_map() {
+        var i, j;
         map = new Array(Math.floor(h / cw));
-        for (var i = 0; i < map.length; i++) {
+        for (i = 0; i < map.length; i++) {
             map[i] = new Array(Math.floor(w / cw));
-            for (var j = 0; j < map.length; j++) {
+            for (j = 0; j < map.length; j++) {
                 map[i][j] = "grass";
             }
         }
-        for (var i = 0; i < map.length; i++) {
-            for (var j = 0; j < map[i].length; j++) {
+        for (i = 0; i < map.length; i++) {
+            for (j = 0; j < map[i].length; j++) {
                 if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
                     map[i][j] = "block";
                     blocks.push({x: i * cw, y: j * cw, id: i + "," + j});
@@ -70,7 +71,7 @@ $(document).ready(function () {
             }
         }
         var wall = $('.wall-block');
-        for (var i = 0; i < blocks.length - 1; i++) {
+        for (i = 0; i < blocks.length - 1; i++) {
             wall.after(wall.clone());
         }
         var counter = 0;
