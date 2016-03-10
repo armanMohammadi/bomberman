@@ -3,18 +3,20 @@
  */
 run_game = function () {
     //Game variables
+    var each_cell_length = 30;
     var width = $('input[name=game-width]').val();
     var height = $('input[name=game-height]').val();
     var zombies_num = $('input[name=game-zombies]').val();
-
+    var w = width * each_cell_length;
+    var h = height * each_cell_length;
     //Canvas stuff
-    var $canvas = $("#canvas");
-    var canvas = $canvas[0];
-    var w = $canvas.width();
-    var h = $canvas.height();
+    //var $canvas = $("#canvas");
+    //var canvas = $canvas[0];
+
+
 
     //Lets save the cell width in a variable for easy control
-    var cw = 30;
+
     var d;
     var bomberman;
     var b;
@@ -55,18 +57,18 @@ run_game = function () {
     //Lets paint the snake now
     function make_map() {
         var i, j;
-        map = new Array(Math.floor(h / cw));
+        map = new Array(Math.floor(h / each_cell_length));
         for (i = 0; i < map.length; i++)
-            map[i] = new Array(Math.floor(w / cw));
+            map[i] = new Array(Math.floor(w / each_cell_length));
 
         for (i = 0; i < map.length; i++) {
             for (j = 0; j < map[i].length; j++) {
                 if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
                     map[i][j] = "block";
-                    blocks.push({x: i * cw, y: j * cw, id: i + "," + j});
+                    blocks.push({x: i * each_cell_length, y: j * each_cell_length, id: i + "," + j});
                 } else {
                     map[i][j] = "grass";
-                    grasses.push({x: i * cw, y: j * cw})
+                    grasses.push({x: i * each_cell_length, y: j * each_cell_length})
                 }
             }
         }
@@ -98,8 +100,8 @@ run_game = function () {
                     }
                     if (temp_add_zombies_con) {
                         zombies.push({
-                            x: temp1 * cw,
-                            y: temp2 * cw,
+                            x: temp1 * each_cell_length,
+                            y: temp2 * each_cell_length,
                             dir: "right",
                             px: temp1 * 3,
                             py: temp2 * 3,
@@ -137,8 +139,8 @@ run_game = function () {
                 }
                 if (temp_add_bomberman_con) {
                     bomberman = {
-                        x: temp1 * cw,
-                        y: temp2 * cw,
+                        x: temp1 * each_cell_length,
+                        y: temp2 * each_cell_length,
                         dir: "null",
                         px: temp1 * 3,
                         py: temp2 * 3
@@ -194,14 +196,14 @@ run_game = function () {
                 zombies[i].dir = "down";
             var nx = zombies[i].x;
             var ny = zombies[i].y;
-            if (zombies[i].dir == "right") nx += Math.floor(cw / 3);
-            else if (zombies[i].dir == "left") nx -= Math.floor(cw / 3);
-            else if (zombies[i].dir == "up") ny -= Math.floor(cw / 3);
-            else if (zombies[i].dir == "down") ny += Math.floor(cw / 3);
-            if (map[Math.floor((nx + 1) / cw)][Math.floor((ny + 1) / cw)] != "block") {
-                if (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + 1) / cw)] != "block") {
-                    if (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block") {
-                        if (map[Math.floor((nx + 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block") {
+            if (zombies[i].dir == "right") nx += Math.floor(each_cell_length / 3);
+            else if (zombies[i].dir == "left") nx -= Math.floor(each_cell_length / 3);
+            else if (zombies[i].dir == "up") ny -= Math.floor(each_cell_length / 3);
+            else if (zombies[i].dir == "down") ny += Math.floor(each_cell_length / 3);
+            if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") {
+                if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") {
+                    if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") {
+                        if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") {
                             continue;
                         }
                     }
@@ -216,22 +218,22 @@ run_game = function () {
         var ny = bomberman.y;
         var step;
         if (timer % 3 != 0)
-            step = Math.floor(cw / 9);
+            step = Math.floor(each_cell_length / 9);
         else
-            step = Math.floor(cw / 3) - 2 * Math.floor(cw / 9);
+            step = Math.floor(each_cell_length / 3) - 2 * Math.floor(each_cell_length / 9);
         if (bomberman.dir == "right") nx += step;
         else if (bomberman.dir == "left") nx -= step;
         else if (bomberman.dir == "up") ny -= step;
         else if (bomberman.dir == "down") ny += step;
-        if ((map[Math.floor((nx + 1) / cw)][Math.floor((ny + 1) / cw)] != "block") &&
-            (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + 1) / cw)] != "block") &&
-            (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block") &&
-            (map[Math.floor((nx + 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block")) {
+        if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") &&
+            (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block")) {
 
             bomberman.x = nx;
             bomberman.y = ny;
-            bomberman.px = Math.floor((nx * 3) / cw);
-            bomberman.py = Math.floor((ny * 3) / cw);
+            bomberman.px = Math.floor((nx * 3) / each_cell_length);
+            bomberman.py = Math.floor((ny * 3) / each_cell_length);
         }
         paint_bomberman();
 
@@ -243,26 +245,26 @@ run_game = function () {
             var ny = zombies[i].y;
             var step;
             if (timer % 3 != 0)
-                step = Math.floor(cw / 9);
+                step = Math.floor(each_cell_length / 9);
             else
-                step = Math.floor(cw / 3) - 2 * Math.floor(cw / 9);
+                step = Math.floor(each_cell_length / 3) - 2 * Math.floor(each_cell_length / 9);
             if (zombies[i].dir == "right") nx += step;
             else if (zombies[i].dir == "left") nx -= step;
             else if (zombies[i].dir == "up") ny -= step;
             else if (zombies[i].dir == "down") ny += step;
-            if ((map[Math.floor((nx + 1) / cw)][Math.floor((ny + 1) / cw)] != "block") &&
-                (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + 1) / cw)] != "block") &&
-                (map[Math.floor((nx + cw - 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block") &&
-                (map[Math.floor((nx + 1) / cw)][Math.floor((ny + cw - 1) / cw)] != "block")) {
+            if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block")) {
                 var breakcon = false;
                 for (var j = 0; j < zombies.length; j++) {
-                    if (j != i && ((Math.floor((nx * 3) / cw) <= zombies[j].px + 3 && Math.floor((nx * 3) / cw) >= zombies[j].px - 3) &&
-                        (Math.floor((ny * 3) / cw) <= zombies[j].py + 3 && Math.floor((ny * 3) / cw) >= zombies[j].py - 3))) {
+                    if (j != i && ((Math.floor((nx * 3) / each_cell_length) <= zombies[j].px + 3 && Math.floor((nx * 3) / each_cell_length) >= zombies[j].px - 3) &&
+                        (Math.floor((ny * 3) / each_cell_length) <= zombies[j].py + 3 && Math.floor((ny * 3) / each_cell_length) >= zombies[j].py - 3))) {
                         breakcon = true;
                     }
                 }
-                if (j != i && ((Math.floor((nx * 3) / cw) <= bomberman.px + 3 && Math.floor((nx * 3) / cw) >= bomberman.px - 3) &&
-                    (Math.floor((ny * 3) / cw) <= bomberman.py + 3 && Math.floor((ny * 3) / cw) >= bomberman.py - 3))) {
+                if (j != i && ((Math.floor((nx * 3) / each_cell_length) <= bomberman.px + 3 && Math.floor((nx * 3) / each_cell_length) >= bomberman.px - 3) &&
+                    (Math.floor((ny * 3) / each_cell_length) <= bomberman.py + 3 && Math.floor((ny * 3) / each_cell_length) >= bomberman.py - 3))) {
                     console.log("game over");
                     // init();
                     return;
@@ -270,8 +272,8 @@ run_game = function () {
                 if (!breakcon) {
                     zombies[i].x = nx;
                     zombies[i].y = ny;
-                    zombies[i].px = Math.floor((nx * 3) / cw);
-                    zombies[i].py = Math.floor((ny * 3) / cw);
+                    zombies[i].px = Math.floor((nx * 3) / each_cell_length);
+                    zombies[i].py = Math.floor((ny * 3) / each_cell_length);
                 }
             }
         }
@@ -287,80 +289,80 @@ run_game = function () {
             else if (bombs[i].time < timer - 200 && bombs[i].time > timer - 230) {
                 bombs[i].mode = "post_explosion";
                 for (j = 0; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / cw) + j][Math.floor(bombs[i].y / cw)] == "block") {
+                    if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
                         break;
                     }
                     bombs[i].explosions.push({
-                        x: bombs[i].x + j * cw,
+                        x: bombs[i].x + j * each_cell_length,
                         y: bombs[i].y,
                         t: timer - bombs[i].time
                     });
                     for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / cw) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
-                    if (3 * (Math.floor(bombs[i].x / cw) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw)) == bomberman.py) {
+                    if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
                         console.log("game over");
                         return;
                     }
                 }
                 for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / cw) - j][Math.floor(bombs[i].y / cw)] == "block") {
+                    if (map[Math.floor(bombs[i].x / each_cell_length) - j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
                         break;
                     }
                     bombs[i].explosions.push({
-                        x: bombs[i].x - j * cw,
+                        x: bombs[i].x - j * each_cell_length,
                         y: bombs[i].y,
                         t: timer - bombs[i].time
                     });
                     for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / cw) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
-                    if (3 * (Math.floor(bombs[i].x / cw) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw)) == bomberman.py) {
+                    if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
                         console.log("game over");
                         return;
                     }
                 }
                 for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) + j] == "block") {
+                    if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) + j] == "block") {
                         break;
                     }
                     bombs[i].explosions.push({
                         x: bombs[i].x,
-                        y: bombs[i].y + j * cw,
+                        y: bombs[i].y + j * each_cell_length,
                         t: timer - bombs[i].time
                     });
                     for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) + j) == zombies[k].py) {
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
-                    if (3 * (Math.floor(bombs[i].x / cw) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw) + j) == bomberman.py) {
+                    if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
                         console.log("game over");
                         return;
                     }
                 }
 
                 for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) - j] == "block") {
+                    if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) - j] == "block") {
                         break;
                     }
                     bombs[i].explosions.push({
                         x: bombs[i].x,
-                        y: bombs[i].y - j * cw,
+                        y: bombs[i].y - j * each_cell_length,
                         t: timer - bombs[i].time
                     });
 
                     for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) - j) == zombies[k].py) {
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == zombies[k].py) {
                             zombies.splice(k, 1);
                         }
                     }
 
-                    if (3 * (Math.floor(bombs[i].x / cw) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / cw) - j) == bomberman.py) {
+                    if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
                         console.log("game over");
                         //init();
                         return;
@@ -390,8 +392,8 @@ run_game = function () {
         if (b) {
             b = false;
             bombs.push({
-                x: Math.round(bomberman.px / 3) * cw,
-                y: Math.round(bomberman.py / 3) * cw,
+                x: Math.round(bomberman.px / 3) * each_cell_length,
+                y: Math.round(bomberman.py / 3) * each_cell_length,
                 time: timer,
                 r: itemr,
                 explosions: [],
