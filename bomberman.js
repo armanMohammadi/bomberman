@@ -17,7 +17,7 @@ $(document).ready(function () {
     var score;
     var zombies;
     var zombies_num = 2;
-    var tem = 1;
+
     //Lets create the snake now
     var grasses; //an array of cells to make up the snake
     var blocks;
@@ -38,13 +38,14 @@ $(document).ready(function () {
         itemr = 2;
 
         make_map();
-
         make_zombies();
-
         make_bomberman();
+
         ////every 60ms
-        if (typeof game_loop != "undefined") clearInterval(game_loop);
-        game_loop = setInterval(paint, 30);
+        var game_loop;
+        if (typeof game_loop != "undefined")
+            clearInterval(game_loop);
+        setInterval(paint, 30);
     }
 
     init();
@@ -144,7 +145,13 @@ $(document).ready(function () {
                         temp_add_bomberman_con = false;
                 }
                 if (temp_add_bomberman_con) {
-                    bomberman = {x: temp1 * cw, y: temp2 * cw, dir: "null", px: temp1 * 3, py: temp2 * 3};
+                    bomberman = {
+                        x: temp1 * cw,
+                        y: temp2 * cw,
+                        dir: "null",
+                        px: temp1 * 3,
+                        py: temp2 * 3
+                    };
                     break;
                 }
             }
@@ -184,13 +191,13 @@ $(document).ready(function () {
     }
 
     function paint_bombs() {
-        var bomb_num=0;
-        var explosion_num=0;
-        for(var i=0;i<bombs.length;i++){
-            if(bombs[i].mode=="pre_explosion"){
+        var bomb_num = 0;
+        var explosion_num = 0;
+        for (var i = 0; i < bombs.length; i++) {
+            if (bombs[i].mode == "pre_explosion") {
                 bomb_num++;
-            }else{
-                explosion_num+=bombs[i].explosions.length;
+            } else {
+                explosion_num += bombs[i].explosions.length;
             }
         }
         //$('#main-background').children('.zombie-block').count();
@@ -283,7 +290,7 @@ $(document).ready(function () {
 
     }
 
-    function move_zombieses() {
+    function move_zombies() {
         for (var i = 0; i < zombies.length; i++) {
             var nx = zombies[i].x;
             var ny = zombies[i].y;
@@ -331,15 +338,19 @@ $(document).ready(function () {
     function check_bombs() {
         for (var i = 0; i < bombs.length; i++) {
             if (bombs[i].time > timer - 200) {
-                bombs[i].mode="pre_explosion";
+                bombs[i].mode = "pre_explosion";
             }
             else if (bombs[i].time < timer - 200 && bombs[i].time > timer - 230) {
-                bombs[i].mode="post_explosion";
+                bombs[i].mode = "post_explosion";
                 for (var j = 0; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw) + j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x + j * cw, y:bombs[i].y, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({
+                        x: bombs[i].x + j * cw,
+                        y: bombs[i].y,
+                        t: timer - bombs[i].time
+                    });
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -355,7 +366,11 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw) - j][Math.floor(bombs[i].y / cw)] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x - j * cw,y:bombs[i].y, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({
+                        x: bombs[i].x - j * cw,
+                        y: bombs[i].y,
+                        t: timer - bombs[i].time
+                    });
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw)) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -373,7 +388,11 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) + j] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x, y:bombs[i].y + j * cw, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({
+                        x: bombs[i].x,
+                        y: bombs[i].y + j * cw,
+                        t: timer - bombs[i].time
+                    });
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) + j) == zombies[k].py) {
                             zombies.splice(k, 1);
@@ -391,7 +410,11 @@ $(document).ready(function () {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) - j] == "block") {
                         break;
                     }
-                    bombs[i].explosions.push({x:bombs[i].x, y:bombs[i].y - j * cw, t:timer-bombs[i].time});
+                    bombs[i].explosions.push({
+                        x: bombs[i].x,
+                        y: bombs[i].y - j * cw,
+                        t: timer - bombs[i].time
+                    });
 
                     for (var k = 0; k < zombies.length; k++) {
                         if (3 * (Math.floor(bombs[i].x / cw)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / cw) - j) == zombies[k].py) {
@@ -434,7 +457,7 @@ $(document).ready(function () {
                 time: timer,
                 r: itemr,
                 explosions: [],
-                mode:"pre_explosion"
+                mode: "pre_explosion"
             });
         }
         check_bombs();
@@ -445,7 +468,7 @@ $(document).ready(function () {
         //
         move_bomberman();
         //
-        move_zombieses();
+        move_zombies();
         timer++;
     }
 
