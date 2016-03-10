@@ -60,7 +60,11 @@ run_game = function () {
             for (j = 0; j < map[i].length; j++) {
                 if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
                     map[i][j] = "block";
-                    blocks.push({x: i * each_cell_length, y: j * each_cell_length, id: i + "," + j});
+                    blocks.push({
+                        x: i * each_cell_length,
+                        y: j * each_cell_length,
+                        id: i + "," + j
+                    });
                 } else {
                     map[i][j] = "grass";
                     grasses.push({x: i * each_cell_length, y: j * each_cell_length})
@@ -155,11 +159,25 @@ run_game = function () {
     function paint_zombies() {
         var counter = 0;
         $('#main-background').children('.zombie-block').each(function () {
-            $(this).css('position', 'absolute');
-            $(this).css('left', zombies[counter].x + 'px');
-            $(this).css('top', zombies[counter].y + 'px');
-            counter++;
-        });
+                //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                if (counter < zombies.length) {
+
+                    $(this).css('position', 'absolute');
+                    $(this).css('left', zombies[counter].x + 'px');
+                    $(this).css('top', zombies[counter].y + 'px');
+                }
+                else if (counter == zombies.length) {
+                    $(this).css('visibility', 'hidden');
+                }
+                else {
+                    $(this).remove();
+                }
+                counter++;
+
+            }
+        )
+        ;
+
     }
 
     function paint_bomberman() {
@@ -169,14 +187,28 @@ run_game = function () {
     }
 
     function paint_bombs() {
-        var bomb_num = 0;
-        var explosion_num = 0;
         for (var i = 0; i < bombs.length; i++) {
-            if (bombs[i].mode == "pre_explosion")
-                bomb_num++;
-            else
-                explosion_num += bombs[i].explosions.length;
+            if (bombs[i].mode == "pre_explosion") {
+                if (!bombs[i].visibility) {
+                    game_ground.append($('.bomb-block').clone());
+                    bombs[i].visibility = true;
+                }
+            } else {
+            }
         }
+        var counter = 0;
+        $('#main-background').children('.bomb-block').each(function () {
+            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+            if (counter < bombs.length) {
+                $(this).css('position', 'absolute');
+                $(this).css('visibility', 'visible');
+                $(this).css('left', bombs[counter].x + 'px');
+                $(this).css('top', bombs[counter].y + 'px');
+            } else {
+                $(this).remove();
+            }
+            counter++;
+        });
     }
 
     function set_zombies_dir() {
@@ -370,7 +402,6 @@ run_game = function () {
             }
             else {
                 bombs.splice(i, 1);
-                $('.bomb-block')[i].remove();
             }
 
 
@@ -393,7 +424,9 @@ run_game = function () {
                 time: timer,
                 r: itemr,
                 explosions: [],
-                mode: "pre_explosion"
+                mode: "pre_explosion",
+                visibility: false,
+                exp: false
             });
         }
         check_bombs();
