@@ -53,19 +53,16 @@ $(document).ready(function () {
     function make_map() {
         var i, j;
         map = new Array(Math.floor(h / cw));
-        for (i = 0; i < map.length; i++) {
+        for (i = 0; i < map.length; i++)
             map[i] = new Array(Math.floor(w / cw));
-            for (j = 0; j < map.length; j++) {
-                map[i][j] = "grass";
-            }
-        }
+
         for (i = 0; i < map.length; i++) {
             for (j = 0; j < map[i].length; j++) {
                 if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
                     map[i][j] = "block";
                     blocks.push({x: i * cw, y: j * cw, id: i + "," + j});
-                }
-                else {
+                } else {
+                    map[i][j] = "grass";
                     grasses.push({x: i * cw, y: j * cw})
                 }
             }
@@ -75,8 +72,7 @@ $(document).ready(function () {
             wall.after(wall.clone());
         }
         var counter = 0;
-        wall = $('.wall-block');
-        $('#main-background').children('.wall-block').each(function (i) {
+        $('#main-background').children('.wall-block').each(function () {
             //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
             $(this).css('position', 'absolute');
             $(this).css('left', blocks[counter].x + 'px');
