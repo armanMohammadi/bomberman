@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 
 <html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="bomberman.css">
+        <script type="text/javascript" src="jquery-2.2.1.min.js"></script>
+        <!--<script src="bomberman.js" type="text/javascript"></script>-->
+        <meta charset="UTF-8">
+        <title>jk</title>
+    </head>
+    <body>
+        <div id="main-background">
+            <div class="wall-block block"></div>
+            <div class="zombie-block block"></div>
+            <div class="bomberman-block block"></div>
+            <div class="bomb-block block"></div>
+        </div>
+        <div id="containter">
+            <div id="content">
+                any text<br>
+                any height<br>
+                any content, for example generated from DB<br>
+                everything is vertically centered
+            </div>
+        </div>
 
 
-<head>
-    <link rel="stylesheet" type="text/css" href="bomberman.css">
-    <script type="text/javascript" src="jquery-2.2.1.min.js"></script>
-    <script src="bomberman.js" type="text/javascript"></script>
 
-    <meta charset="UTF-8">
+        <!-- Lets make a simple snake game -->
+        <canvas id="canvas" width="450" height="450"></canvas>
 
-    <title>jk</title>
-</head>
-<body>
-<div id="main-background">
-    <div class="wall-block block"></div>
-    <div class="zombie-block block"></div>
-    <div class="bomberman-block block"></div>
-    <div class="bomb-block block"></div>
-</div>
-
-<!-- Lets make a simple snake game -->
-<canvas id="canvas" width="450" height="450"></canvas>
-
-<!-- Jquery -->
-</body>
+        <!-- Jquery -->
+    </body>
 </html>
 

@@ -170,11 +170,10 @@ $(document).ready(function () {
         var bomb_num = 0;
         var explosion_num = 0;
         for (var i = 0; i < bombs.length; i++) {
-            if (bombs[i].mode == "pre_explosion") {
+            if (bombs[i].mode == "pre_explosion")
                 bomb_num++;
-            } else {
+            else
                 explosion_num += bombs[i].explosions.length;
-            }
         }
     }
 
@@ -270,13 +269,9 @@ $(document).ready(function () {
                     zombies[i].px = Math.floor((nx * 3) / cw);
                     zombies[i].py = Math.floor((ny * 3) / cw);
                 }
-
             }
-
-
         }
         paint_zombies();
-
     }
 
     function check_bombs() {
@@ -343,9 +338,8 @@ $(document).ready(function () {
                         console.log("game over");
                         return;
                     }
-
-
                 }
+
                 for (j = 1; j <= bombs[i].r; j++) {
                     if (map[Math.floor(bombs[i].x / cw)][Math.floor(bombs[i].y / cw) - j] == "block") {
                         break;
@@ -404,10 +398,7 @@ $(document).ready(function () {
         if (timer % 9 == 0) {
             set_zombies_dir();
         }
-
-        //
         move_bomberman();
-        //
         move_zombies();
         timer++;
     }
