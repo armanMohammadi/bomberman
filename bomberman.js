@@ -275,7 +275,7 @@ run_game = function () {
                 if (all_counter < explosion_num) {
                     $(this).css('position', 'absolute');
                     $(this).css('visibility', 'visible');
-                    console.log("&&&&  bomb_counter" + bomb_counter + "   bombs[bomb_counter] " + bombs[bomb_counter] + "   counter " + counter + "  explosion_num" + explosion_num);
+                    //  console.log("&&&&  bomb_counter" + bomb_counter + "   bombs[bomb_counter] " + bombs[bomb_counter] + "   counter " + counter + "  explosion_num" + explosion_num);
                     $(this).css('left', bombs[bomb_counter].explosions[counter].x + 'px');
                     $(this).css('top', bombs[bomb_counter].explosions[counter].y + 'px');
                     counter++;
@@ -403,7 +403,8 @@ run_game = function () {
     }
 
     function check_bombs() {
-        var i, j, k, counter;
+
+        var i, j, k;
         for (i = 0; i < bombs.length; i++) {
             if (bombs[i].time > timer - 200) {
                 bombs[i].mode = "pre_explosion";
@@ -412,10 +413,16 @@ run_game = function () {
                 bombs[i].mode = "post_explosion";
                 console.log("timer *** " + timer);
                 if (!bombs[i].exp) {
+                    console.log(i + "   " + bombs[i].explosions.length + "   " + jQuery.now());
                     bombs[i].exp = true;
                     $('#explosion-audio')[0].play();
-                    for (j = 0; j <= bombs[i].r; j++) {
+                    var range_right = bombs[i].r;
+                    var range_left = bombs[i].r;
+                    var range_up = bombs[i].r;
+                    var range_down = bombs[i].r;
+                    for (j = 0; j <= range_right; j++) {
                         if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                            range_right = j;
                             break;
                         }
                         bombs[i].explosions.push({
@@ -423,25 +430,10 @@ run_game = function () {
                             y: bombs[i].y,
                             t: timer - bombs[i].time
                         });
-                        for (k = 0; k < zombies.length; k++) {
-                            if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
-                                zombies.splice(k, 1);
-                            }
-                        }
-                        $('#main-background').children('.box-block').each(function () {
-                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-                            if ((bombs[i].x + j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
-                                map[(Math.floor(bombs[i].x / each_cell_length) + j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
-                                $(this).remove();
-                            }
-                        });
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
-                            console.log("game over");
-                            game_over(false);
-                        }
                     }
-                    for (j = 1; j <= bombs[i].r; j++) {
+                    for (j = 1; j <= range_left; j++) {
                         if (map[Math.floor(bombs[i].x / each_cell_length) - j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                            range_left = j;
                             break;
                         }
                         bombs[i].explosions.push({
@@ -449,25 +441,10 @@ run_game = function () {
                             y: bombs[i].y,
                             t: timer - bombs[i].time
                         });
-                        for (k = 0; k < zombies.length; k++) {
-                            if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
-                                zombies.splice(k, 1);
-                            }
-                        }
-                        $('#main-background').children('.box-block').each(function () {
-                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-                            if ((bombs[i].x - j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
-                                map[(Math.floor(bombs[i].x / each_cell_length) - j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
-                                $(this).remove();
-                            }
-                        });
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
-                            console.log("game over");
-                            game_over(false);
-                        }
                     }
-                    for (j = 1; j <= bombs[i].r; j++) {
+                    for (j = 1; j <= range_down; j++) {
                         if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) + j] == "block") {
+                            range_down = j;
                             break;
                         }
                         bombs[i].explosions.push({
@@ -475,27 +452,10 @@ run_game = function () {
                             y: bombs[i].y + j * each_cell_length,
                             t: timer - bombs[i].time
                         });
-                        for (k = 0; k < zombies.length; k++) {
-                            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == zombies[k].py) {
-                                zombies.splice(k, 1);
-                            }
-                        }
-                        $('#main-background').children('.box-block').each(function () {
-                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-                            if ((bombs[i].x == parseInt($(this).css('left').replace('px', '')) ) && (bombs[i].y + j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
-                                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) + j)] = "grass";
-                                $(this).remove();
-                            }
-                        });
-
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
-                            console.log("game over");
-                            game_over(false);
-                        }
                     }
-
-                    for (j = 1; j <= bombs[i].r; j++) {
+                    for (j = 1; j <= range_up; j++) {
                         if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) - j] == "block") {
+                            range_up = j;
                             break;
                         }
                         bombs[i].explosions.push({
@@ -503,29 +463,166 @@ run_game = function () {
                             y: bombs[i].y - j * each_cell_length,
                             t: timer - bombs[i].time
                         });
-
-                        for (k = 0; k < zombies.length; k++) {
-                            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == zombies[k].py) {
+                    }
+                    for (k = 0; k < zombies.length; k++) {
+                        if ((zombies[k].px <= 3 * (Math.floor(bombs[i].x / each_cell_length) + range_right)) &&
+                            (zombies[k].px >= 3 * (Math.floor(bombs[i].x / each_cell_length) - range_left))) {
+                            if (3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
                                 zombies.splice(k, 1);
                             }
                         }
-
-                        $('#main-background').children('.box-block').each(function () {
-                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
-                            if ((bombs[i].x == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y - j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
-                                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) - j)] = "grass";
+                        if ((zombies[k].py <= 3 * (Math.floor(bombs[i].y / each_cell_length) + range_down)) &&
+                            (zombies[k].py >= 3 * (Math.floor(bombs[i].y / each_cell_length) - range_up))) {
+                            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px) {
+                                zombies.splice(k, 1);
+                            }
+                        }
+                    }
+                    $('#main-background').children('.box-block').each(function () {
+                        //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                        if (parseInt($(this).css('left').replace('px', '')) <= bombs[i].x + each_cell_length * range_right &&
+                            (parseInt($(this).css('left').replace('px', '')) >= bombs[i].x - each_cell_length * range_left)) {
+                            if (bombs[i].y == parseInt($(this).css('top').replace('px', ''))) {
+                                map[Math.floor(parseInt($(this).css('left').replace('px', '')) / each_cell_length)][
+                                    Math.floor(parseInt($(this).css('top').replace('px', '')) / each_cell_length)] = "grass";
                                 $(this).remove();
                             }
-                        });
-
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
-                            console.log("game over");
+                        }
+                        if (parseInt($(this).css('top').replace('px', '')) <= bombs[i].y + each_cell_length * range_down &&
+                            (parseInt($(this).css('top').replace('px', '')) >= bombs[i].y - each_cell_length * range_up)) {
+                            if (parseInt($(this).css('left').replace('px', '')) == bombs[i].x) {
+                                map[Math.floor(parseInt($(this).css('left').replace('px', '')) / each_cell_length)][
+                                    Math.floor(parseInt($(this).css('top').replace('px', '')) / each_cell_length)] = "grass";
+                                $(this).remove();
+                            }
+                        }
+                    });
+                    if ((bomberman.px <= 3 * (Math.floor(bombs[i].x / each_cell_length) + range_right)) &&
+                        (bomberman.px >= 3 * (Math.floor(bombs[i].x / each_cell_length) - range_left))) {
+                        if (bomberman.py == 3 * (Math.floor(bombs[i].y / each_cell_length))) {
                             game_over(false);
                         }
-
                     }
+                    if ((bomberman.py <= 3 * (Math.floor(bombs[i].y / each_cell_length) + range_down)) &&
+                        (bomberman.py >= 3 * (Math.floor(bombs[i].y / each_cell_length) - range_up))) {
+                        if (bomberman.px == 3 * (Math.floor(bombs[i].x / each_cell_length))) {
+                            game_over(false);
+                        }
+                    }
+                    //
+                    //    for (j = 0; j <= bombs[i].r; j++) {
+                    //        if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                    //            break;
+                    //        }
+                    //        bombs[i].explosions.push({
+                    //            x: bombs[i].x + j * each_cell_length,
+                    //            y: bombs[i].y,
+                    //            t: timer - bombs[i].time
+                    //        });
+                    //        for (k = 0; k < zombies.length; k++) {
+                    //            if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
+                    //                zombies.splice(k, 1);
+                    //            }
+                    //        }
+                    //        $('#main-background').children('.box-block').each(function () {
+                    //            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                    //            if ((bombs[i].x + j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
+                    //                map[(Math.floor(bombs[i].x / each_cell_length) + j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
+                    //                $(this).remove();
+                    //            }
+                    //        });
+                    //        if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
+                    //            //consolee.log("game over");
+                    //            game_over(false);
+                    //        }
+                    //    }
+                    //    for (j = 1; j <= bombs[i].r; j++) {
+                    //        if (map[Math.floor(bombs[i].x / each_cell_length) - j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                    //            break;
+                    //        }
+                    //        bombs[i].explosions.push({
+                    //            x: bombs[i].x - j * each_cell_length,
+                    //            y: bombs[i].y,
+                    //            t: timer - bombs[i].time
+                    //        });
+                    //        for (k = 0; k < zombies.length; k++) {
+                    //            if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
+                    //                zombies.splice(k, 1);
+                    //            }
+                    //        }
+                    //        $('#main-background').children('.box-block').each(function () {
+                    //            //  //consolee.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                    //            if ((bombs[i].x - j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
+                    //                map[(Math.floor(bombs[i].x / each_cell_length) - j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
+                    //                $(this).remove();
+                    //            }
+                    //        });
+                    //        if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
+                    //            //consolee.log("game over");
+                    //            game_over(false);
+                    //        }
+                    //    }
+                    //    for (j = 1; j <= bombs[i].r; j++) {
+                    //        if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) + j] == "block") {
+                    //            break;
+                    //        }
+                    //        bombs[i].explosions.push({
+                    //            x: bombs[i].x,
+                    //            y: bombs[i].y + j * each_cell_length,
+                    //            t: timer - bombs[i].time
+                    //        });
+                    //        for (k = 0; k < zombies.length; k++) {
+                    //            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == zombies[k].py) {
+                    //                zombies.splice(k, 1);
+                    //            }
+                    //        }
+                    //        $('#main-background').children('.box-block').each(function () {
+                    //            //  //consolee.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                    //            if ((bombs[i].x == parseInt($(this).css('left').replace('px', '')) ) && (bombs[i].y + j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
+                    //                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) + j)] = "grass";
+                    //                $(this).remove();
+                    //            }
+                    //        });
+                    //
+                    //        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
+                    //            //consolee.log("game over");
+                    //            game_over(false);
+                    //        }
+                    //    }
+                    //
+                    //    for (j = 1; j <= bombs[i].r; j++) {
+                    //        if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) - j] == "block") {
+                    //            break;
+                    //        }
+                    //        bombs[i].explosions.push({
+                    //            x: bombs[i].x,
+                    //            y: bombs[i].y - j * each_cell_length,
+                    //            t: timer - bombs[i].time
+                    //        });
+                    //
+                    //        for (k = 0; k < zombies.length; k++) {
+                    //            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == zombies[k].py) {
+                    //                zombies.splice(k, 1);
+                    //            }
+                    //        }
+                    //
+                    //        $('#main-background').children('.box-block').each(function () {
+                    //            //  //consolee.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                    //            if ((bombs[i].x == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y - j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
+                    //                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) - j)] = "grass";
+                    //                $(this).remove();
+                    //            }
+                    //        });
+                    //
+                    //        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
+                    //            //consolee.log("game over");
+                    //            game_over(false);
+                    //        }
+                    //
+                    //    }
                 }
-                console.log("bombes[" + i + "].explosion.length" + bombs[i].explosions.length);
+                console.log(i + "   " + bombs[i].explosions.length + "   " + jQuery.now());
+                //consolee.log("bombes[" + i + "].explosion.length" + bombs[i].explosions.length);
 
 
             }
@@ -606,7 +703,7 @@ run_game = function () {
 
     $(document).keydown(function (e) {
         var key = e.which;
-        //console.log("e.which : " + key);
+        ////consolee.log("e.which : " + key);
         //We will add another clause to prevent reverse gear
         if (key == "37") d = "left";
         else if (key == "38") d = "up";
