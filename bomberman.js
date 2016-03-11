@@ -26,9 +26,12 @@ run_game = function () {
     var bombs;
 
     var item_range;
-    var item_teleport;
+    var item_spirit;
+    var item_goal;
     var range;
     var boxes;
+    var spirit;
+    var goal;
 
     function init() {
         d = ""; //default direction
@@ -40,8 +43,11 @@ run_game = function () {
         timer = 0;
         bombs = [];
         range = 2;
-        item_range = {x: each_cell_length, y: each_cell_length};
-        item_teleport = {x: 3 * each_cell_length, y: each_cell_length};
+        spirit = false;
+        goal = true;
+        item_range = {x: each_cell_length, y: each_cell_length, visit: false};
+        item_spirit = {x: 3 * each_cell_length, y: each_cell_length, visit: false};
+        item_goal = {x: 3 * each_cell_length, y: 3 * each_cell_length, visit: false};
         boxes = [];
         make_map();
         make_zombies();
@@ -63,21 +69,23 @@ run_game = function () {
             map[i] = new Array(Math.floor(w / each_cell_length));
 
         map[Math.floor(item_range.x / each_cell_length)][Math.floor(item_range.y / each_cell_length)] = "box";
-        boxes.push({x: item_range.x, y: item_range.y})
-        map[Math.floor(item_teleport.x / each_cell_length)][Math.floor(item_teleport.y / each_cell_length)] = "box";
-        boxes.push({x: item_teleport.x, y: item_teleport.y})
+        boxes.push({x: item_range.x, y: item_range.y});
+        map[Math.floor(item_spirit.x / each_cell_length)][Math.floor(item_spirit.y / each_cell_length)] = "box";
+        boxes.push({x: item_spirit.x, y: item_spirit.y});
+        map[Math.floor(item_goal.x / each_cell_length)][Math.floor(item_goal.y / each_cell_length)] = "box";
+        boxes.push({x: item_goal.x, y: item_goal.y});
         var item_block = $('.item-range-block');
         game_ground.append(item_block);
         item_block.css('position', 'absolute');
         item_block.css('visibility', 'visible');
         item_block.css('left', item_range.x + 'px');
         item_block.css('top', item_range.y + 'px');
-        item_block = $('.item-teleport-block');
+        item_block = $('.item-spirit-block');
         game_ground.append(item_block);
         item_block.css('position', 'absolute');
         item_block.css('visibility', 'visible');
-        item_block.css('left', item_teleport.x + 'px');
-        item_block.css('top', item_teleport.y + 'px');
+        item_block.css('left', item_spirit.x + 'px');
+        item_block.css('top', item_spirit.y + 'px');
         for (i = 0; i < map.length; i++) {
             for (j = 0; j < map[i].length; j++) {
                 if (map[i][j] != "box") {
@@ -328,15 +336,27 @@ run_game = function () {
         else if (bomberman.dir == "left") nx -= step;
         else if (bomberman.dir == "up") ny -= step;
         else if (bomberman.dir == "down") ny += step;
-        if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
-            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
-            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") &&
-            (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass")) {
+        if (spirit) {
 
-            bomberman.x = nx;
-            bomberman.y = ny;
-            bomberman.px = Math.floor((nx * 3) / each_cell_length);
-            bomberman.py = Math.floor((ny * 3) / each_cell_length);
+            if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") &&
+                (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block")) {
+                bomberman.x = nx;
+                bomberman.y = ny;
+                bomberman.px = Math.floor((nx * 3) / each_cell_length);
+                bomberman.py = Math.floor((ny * 3) / each_cell_length);
+            }
+        } else {
+            if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass")) {
+                bomberman.x = nx;
+                bomberman.y = ny;
+                bomberman.px = Math.floor((nx * 3) / each_cell_length);
+                bomberman.py = Math.floor((ny * 3) / each_cell_length);
+            }
         }
         paint_bomberman();
 
@@ -369,8 +389,7 @@ run_game = function () {
                 if (j != i && ((Math.floor((nx * 3) / each_cell_length) <= bomberman.px + 3 && Math.floor((nx * 3) / each_cell_length) >= bomberman.px - 3) &&
                     (Math.floor((ny * 3) / each_cell_length) <= bomberman.py + 3 && Math.floor((ny * 3) / each_cell_length) >= bomberman.py - 3))) {
                     console.log("game over");
-                    // init();
-                    return;
+                    game_over(false);
                 }
                 if (!breakcon) {
                     zombies[i].x = nx;
@@ -418,7 +437,7 @@ run_game = function () {
                         });
                         if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
                             console.log("game over");
-                            return;
+                            game_over(false);
                         }
                     }
                     for (j = 1; j <= bombs[i].r; j++) {
@@ -444,7 +463,7 @@ run_game = function () {
                         });
                         if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
                             console.log("game over");
-                            return;
+                            game_over(false);
                         }
                     }
                     for (j = 1; j <= bombs[i].r; j++) {
@@ -471,7 +490,7 @@ run_game = function () {
 
                         if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
                             console.log("game over");
-                            return;
+                            game_over(false);
                         }
                     }
 
@@ -501,8 +520,7 @@ run_game = function () {
 
                         if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
                             console.log("game over");
-                            //init();
-                            return;
+                            game_over(false);
                         }
 
                     }
@@ -523,6 +541,9 @@ run_game = function () {
     function paint() {
         //To avoid the snake trail we need to paint the BG on every frame
         //Lets paint the canvas now
+        if (goal) {
+            game_over(true);
+        }
         if (timer % 3 == 0) {
             bomberman.dir = d;
             d = "";
@@ -540,6 +561,32 @@ run_game = function () {
                 exp: false
             });
         }
+
+        if ((item_range.visit == false) && (map[Math.floor(item_range.x / each_cell_length)][Math.floor(item_range.y / each_cell_length)] == "grass")) {
+            if (3 * Math.floor(item_range.x / each_cell_length) == bomberman.px && 3 * Math.floor(item_range.y / each_cell_length) == bomberman.py) {
+                item_range.visit = true;
+                range += 2;
+                $('.item-range-block').css("visibility", "hidden");
+            }
+        }
+        if ((item_spirit.visit == false) && (map[Math.floor(item_spirit.x / each_cell_length)][Math.floor(item_spirit.y / each_cell_length)] == "grass")) {
+            if (3 * Math.floor(item_spirit.x / each_cell_length) == bomberman.px && 3 * Math.floor(item_spirit.y / each_cell_length) == bomberman.py) {
+                item_spirit.visit = true;
+                spirit = true;
+                $('.item-spirit-block').css("visibility", "hidden");
+            }
+        }
+        if ((item_goal.visit == false) && (map[Math.floor(item_goal.x / each_cell_length)][Math.floor(item_goal.y / each_cell_length)] == "grass")) {
+            if (3 * Math.floor(item_goal.x / each_cell_length) == bomberman.px && 3 * Math.floor(item_goal.y / each_cell_length) == bomberman.py) {
+                if (zombies.length == 0) {
+                    item_golal.visit = true;
+                    goal = true;
+                    $('.item-spirit-block').css("visibility", "hidden");
+                }
+            }
+        }
+
+
         check_bombs();
         if (timer % 9 == 0) {
             set_zombies_dir();
@@ -549,6 +596,10 @@ run_game = function () {
         timer++;
     }
 
+
+    function game_over(win) {
+
+    }
 
     $(document).keydown(function (e) {
         var key = e.which;

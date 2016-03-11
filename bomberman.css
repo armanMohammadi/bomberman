@@ -53,9 +53,14 @@ body {
 	background-color: rgba(20, 250, 219, 0.92);
     visibility: hidden;
  }
-.item-teleport-block{
+.item-spirit-block{
 	background-color: rgba(250, 34, 217, 0.95);
     visibility: hidden;
 }
+.item-goal-block{
+	background-color: rgba(250, 249, 4, 0.95);
+    visibility: hidden;
+}
+
 
 
