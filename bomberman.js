@@ -4,7 +4,7 @@
 run_game = function () {
     //Game variables
     var game_ground = $('.game');
-    var each_cell_length = 30;
+    var each_cell_length = 21;
     var width = $('input[name=game-width]').val();
     var height = $('input[name=game-height]').val();
     var zombies_num = $('input[name=game-zombies]').val();
