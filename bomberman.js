@@ -24,7 +24,11 @@ run_game = function () {
     var map;
     var timer;
     var bombs;
-    var itemr;
+
+    var item_range;
+    var item_teleport;
+    var range;
+    var boxes;
 
     function init() {
         d = ""; //default direction
@@ -35,8 +39,10 @@ run_game = function () {
         grasses = [];
         timer = 0;
         bombs = [];
-        itemr = 2;
-
+        range = 2;
+        item_range = {x: each_cell_length, y: each_cell_length};
+        item_teleport = {x: 3 * each_cell_length, y: each_cell_length};
+        boxes = [];
         make_map();
         make_zombies();
         make_bomberman();
@@ -56,21 +62,46 @@ run_game = function () {
         for (i = 0; i < map.length; i++)
             map[i] = new Array(Math.floor(w / each_cell_length));
 
+        map[Math.floor(item_range.x / each_cell_length)][Math.floor(item_range.y / each_cell_length)] = "box";
+        boxes.push({x: item_range.x, y: item_range.y})
+        map[Math.floor(item_teleport.x / each_cell_length)][Math.floor(item_teleport.y / each_cell_length)] = "box";
+        boxes.push({x: item_teleport.x, y: item_teleport.y})
+        var item_block = $('.item-range-block');
+        game_ground.append(item_block);
+        item_block.css('position', 'absolute');
+        item_block.css('visibility', 'visible');
+        item_block.css('left', item_range.x + 'px');
+        item_block.css('top', item_range.y + 'px');
+        item_block = $('.item-teleport-block');
+        game_ground.append(item_block);
+        item_block.css('position', 'absolute');
+        item_block.css('visibility', 'visible');
+        item_block.css('left', item_teleport.x + 'px');
+        item_block.css('top', item_teleport.y + 'px');
         for (i = 0; i < map.length; i++) {
             for (j = 0; j < map[i].length; j++) {
-                if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
-                    map[i][j] = "block";
-                    blocks.push({
-                        x: i * each_cell_length,
-                        y: j * each_cell_length,
-                        id: i + "," + j
-                    });
-                } else {
-                    map[i][j] = "grass";
-                    grasses.push({x: i * each_cell_length, y: j * each_cell_length})
+                if (map[i][j] != "box") {
+                    if (i == 0 || j == 0 || i + 1 >= map.length || j + 1 >= map[i].length || (i % 2 == 0 && j % 2 == 0)) {
+                        map[i][j] = "block";
+                        blocks.push({
+                            x: i * each_cell_length,
+                            y: j * each_cell_length,
+                            id: i + "," + j
+                        });
+                    } else {
+                        if (Math.random() > 0.10) {
+                            map[i][j] = "grass";
+                            grasses.push({x: i * each_cell_length, y: j * each_cell_length})
+                        } else {
+                            map[i][j] = "box";
+                            boxes.push({x: i * each_cell_length, y: j * each_cell_length})
+                        }
+                    }
                 }
             }
         }
+
+
         var wall = $('.wall-block');
         for (i = 0; i < blocks.length; i++) {
             game_ground.append(wall.clone());
@@ -83,6 +114,19 @@ run_game = function () {
             $(this).css('id', blocks[counter].id);
             counter++;
         });
+        var box = $('.box-block');
+        for (i = 0; i < boxes.length; i++) {
+            game_ground.append(box.clone());
+        }
+        counter = 0;
+        $('#main-background').children('.box-block').each(function () {
+            $(this).css('position', 'absolute');
+            $(this).css('visibility', 'visible');
+            $(this).css('left', boxes[counter].x + 'px');
+            $(this).css('top', boxes[counter].y + 'px');
+            $(this).css('id', boxes[counter].id);
+            counter++;
+        });
     }
 
     function make_zombies() {
@@ -91,7 +135,7 @@ run_game = function () {
             while (true) {
                 var temp1 = Math.floor(Math.random() * map.length);
                 var temp2 = Math.floor(Math.random() * map[temp1].length);
-                if (map[temp1][temp2] != "block") {
+                if (map[temp1][temp2] == "grass") {
                     var temp_add_zombies_con = true;
                     for (var j = 0; j < zombies.length; j++) {
                         if (zombies[j].px == temp1 * 3 && zombies[j].py == temp2 * 3)
@@ -130,7 +174,7 @@ run_game = function () {
         while (true) {
             var temp1 = Math.floor(Math.random() * map.length);
             var temp2 = Math.floor(Math.random() * map[temp1].length);
-            if (map[temp1][temp2] != "block") {
+            if (map[temp1][temp2] == "grass") {
                 var temp_add_bomberman_con = true;
                 for (var j = 0; j < zombies.length; j++) {
                     if (zombies[j].px == temp1 * 3 && zombies[j].py == temp2 * 3)
@@ -187,6 +231,7 @@ run_game = function () {
     }
 
     function paint_bombs() {
+        var explosion_num = 0;
         for (var i = 0; i < bombs.length; i++) {
             if (bombs[i].mode == "pre_explosion") {
                 if (!bombs[i].visibility) {
@@ -194,8 +239,13 @@ run_game = function () {
                     bombs[i].visibility = true;
                 }
             } else {
+                explosion_num += bombs[i].explosions.length;
+                for (var j = 0; j < bombs[i].explosions.length; j++) {
+                    game_ground.append($('.explosion-block').clone());
+                }
             }
         }
+        //console.log("explosion_num  "+explosion_num);
         var counter = 0;
         $('#main-background').children('.bomb-block').each(function () {
             //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
@@ -209,6 +259,31 @@ run_game = function () {
             }
             counter++;
         });
+        var all_counter = 0;
+        counter = 0;
+        var bomb_counter = 0;
+        $('#main-background').children('.explosion-block').each(function (i) {
+
+                if (all_counter < explosion_num) {
+                    $(this).css('position', 'absolute');
+                    $(this).css('visibility', 'visible');
+                    console.log("&&&&  bomb_counter" + bomb_counter + "   bombs[bomb_counter] " + bombs[bomb_counter] + "   counter " + counter + "  explosion_num" + explosion_num);
+                    $(this).css('left', bombs[bomb_counter].explosions[counter].x + 'px');
+                    $(this).css('top', bombs[bomb_counter].explosions[counter].y + 'px');
+                    counter++;
+                    if (counter == bombs[bomb_counter].explosions.length) {
+                        bomb_counter++;
+                        counter = 0;
+                    }
+                } else {
+                    $(this).remove();
+                }
+                all_counter++;
+
+            }
+        )
+        ;
+
     }
 
     function set_zombies_dir() {
@@ -228,10 +303,10 @@ run_game = function () {
             else if (zombies[i].dir == "left") nx -= Math.floor(each_cell_length / 3);
             else if (zombies[i].dir == "up") ny -= Math.floor(each_cell_length / 3);
             else if (zombies[i].dir == "down") ny += Math.floor(each_cell_length / 3);
-            if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") {
-                if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") {
-                    if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") {
-                        if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") {
+            if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") {
+                if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") {
+                    if (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") {
+                        if (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") {
                             continue;
                         }
                     }
@@ -253,10 +328,10 @@ run_game = function () {
         else if (bomberman.dir == "left") nx -= step;
         else if (bomberman.dir == "up") ny -= step;
         else if (bomberman.dir == "down") ny += step;
-        if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
-            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
-            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") &&
-            (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block")) {
+        if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+            (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") &&
+            (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass")) {
 
             bomberman.x = nx;
             bomberman.y = ny;
@@ -280,10 +355,10 @@ run_game = function () {
             else if (zombies[i].dir == "left") nx -= step;
             else if (zombies[i].dir == "up") ny -= step;
             else if (zombies[i].dir == "down") ny += step;
-            if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
-                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] != "block") &&
-                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block") &&
-                (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] != "block")) {
+            if ((map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + each_cell_length - 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass") &&
+                (map[Math.floor((nx + 1) / each_cell_length)][Math.floor((ny + each_cell_length - 1) / each_cell_length)] == "grass")) {
                 var breakcon = false;
                 for (var j = 0; j < zombies.length; j++) {
                     if (j != i && ((Math.floor((nx * 3) / each_cell_length) <= zombies[j].px + 3 && Math.floor((nx * 3) / each_cell_length) >= zombies[j].px - 3) &&
@@ -309,94 +384,130 @@ run_game = function () {
     }
 
     function check_bombs() {
-        var i, j, k;
+        var i, j, k, counter;
         for (i = 0; i < bombs.length; i++) {
             if (bombs[i].time > timer - 200) {
                 bombs[i].mode = "pre_explosion";
             }
-            else if (bombs[i].time < timer - 200 && bombs[i].time > timer - 230) {
+            else if (bombs[i].time <= timer - 200 && bombs[i].time > timer - 230) {
                 bombs[i].mode = "post_explosion";
-                for (j = 0; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
-                        break;
-                    }
-                    bombs[i].explosions.push({
-                        x: bombs[i].x + j * each_cell_length,
-                        y: bombs[i].y,
-                        t: timer - bombs[i].time
-                    });
-                    for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
-                            zombies.splice(k, 1);
+                console.log("timer *** " + timer);
+                if (!bombs[i].exp) {
+                    bombs[i].exp = true;
+
+                    for (j = 0; j <= bombs[i].r; j++) {
+                        if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                            break;
+                        }
+                        bombs[i].explosions.push({
+                            x: bombs[i].x + j * each_cell_length,
+                            y: bombs[i].y,
+                            t: timer - bombs[i].time
+                        });
+                        for (k = 0; k < zombies.length; k++) {
+                            if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
+                                zombies.splice(k, 1);
+                            }
+                        }
+                        $('#main-background').children('.box-block').each(function () {
+                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                            if ((bombs[i].x + j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
+                                map[(Math.floor(bombs[i].x / each_cell_length) + j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
+                                $(this).remove();
+                            }
+                        });
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
+                            console.log("game over");
+                            return;
                         }
                     }
-                    if (3 * (Math.floor(bombs[i].x / each_cell_length) + j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
-                        console.log("game over");
-                        return;
-                    }
-                }
-                for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / each_cell_length) - j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
-                        break;
-                    }
-                    bombs[i].explosions.push({
-                        x: bombs[i].x - j * each_cell_length,
-                        y: bombs[i].y,
-                        t: timer - bombs[i].time
-                    });
-                    for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
-                            zombies.splice(k, 1);
+                    for (j = 1; j <= bombs[i].r; j++) {
+                        if (map[Math.floor(bombs[i].x / each_cell_length) - j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
+                            break;
+                        }
+                        bombs[i].explosions.push({
+                            x: bombs[i].x - j * each_cell_length,
+                            y: bombs[i].y,
+                            t: timer - bombs[i].time
+                        });
+                        for (k = 0; k < zombies.length; k++) {
+                            if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == zombies[k].py) {
+                                zombies.splice(k, 1);
+                            }
+                        }
+                        $('#main-background').children('.box-block').each(function () {
+                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                            if ((bombs[i].x - j * each_cell_length == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y == parseInt($(this).css('top').replace('px', '')))) {
+                                map[(Math.floor(bombs[i].x / each_cell_length) - j)][(Math.floor(bombs[i].y / each_cell_length))] = "grass";
+                                $(this).remove();
+                            }
+                        });
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
+                            console.log("game over");
+                            return;
                         }
                     }
-                    if (3 * (Math.floor(bombs[i].x / each_cell_length) - j) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length)) == bomberman.py) {
-                        console.log("game over");
-                        return;
-                    }
-                }
-                for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) + j] == "block") {
-                        break;
-                    }
-                    bombs[i].explosions.push({
-                        x: bombs[i].x,
-                        y: bombs[i].y + j * each_cell_length,
-                        t: timer - bombs[i].time
-                    });
-                    for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == zombies[k].py) {
-                            zombies.splice(k, 1);
+                    for (j = 1; j <= bombs[i].r; j++) {
+                        if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) + j] == "block") {
+                            break;
                         }
-                    }
-                    if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
-                        console.log("game over");
-                        return;
-                    }
-                }
+                        bombs[i].explosions.push({
+                            x: bombs[i].x,
+                            y: bombs[i].y + j * each_cell_length,
+                            t: timer - bombs[i].time
+                        });
+                        for (k = 0; k < zombies.length; k++) {
+                            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == zombies[k].py) {
+                                zombies.splice(k, 1);
+                            }
+                        }
+                        $('#main-background').children('.box-block').each(function () {
+                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                            if ((bombs[i].x == parseInt($(this).css('left').replace('px', '')) ) && (bombs[i].y + j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
+                                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) + j)] = "grass";
+                                $(this).remove();
+                            }
+                        });
 
-                for (j = 1; j <= bombs[i].r; j++) {
-                    if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) - j] == "block") {
-                        break;
-                    }
-                    bombs[i].explosions.push({
-                        x: bombs[i].x,
-                        y: bombs[i].y - j * each_cell_length,
-                        t: timer - bombs[i].time
-                    });
-
-                    for (k = 0; k < zombies.length; k++) {
-                        if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == zombies[k].py) {
-                            zombies.splice(k, 1);
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) + j) == bomberman.py) {
+                            console.log("game over");
+                            return;
                         }
                     }
 
-                    if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
-                        console.log("game over");
-                        //init();
-                        return;
-                    }
+                    for (j = 1; j <= bombs[i].r; j++) {
+                        if (map[Math.floor(bombs[i].x / each_cell_length)][Math.floor(bombs[i].y / each_cell_length) - j] == "block") {
+                            break;
+                        }
+                        bombs[i].explosions.push({
+                            x: bombs[i].x,
+                            y: bombs[i].y - j * each_cell_length,
+                            t: timer - bombs[i].time
+                        });
 
+                        for (k = 0; k < zombies.length; k++) {
+                            if (3 * (Math.floor(bombs[i].x / each_cell_length)) == zombies[k].px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == zombies[k].py) {
+                                zombies.splice(k, 1);
+                            }
+                        }
+
+                        $('#main-background').children('.box-block').each(function () {
+                            //  console.log(blocks[counter]+"  "+counter+"  "+blocks.length);
+                            if ((bombs[i].x == parseInt($(this).css('left').replace('px', ''))) && (bombs[i].y - j * each_cell_length == parseInt($(this).css('top').replace('px', '')))) {
+                                map[(Math.floor(bombs[i].x / each_cell_length))][(Math.floor(bombs[i].y / each_cell_length) - j)] = "grass";
+                                $(this).remove();
+                            }
+                        });
+
+                        if (3 * (Math.floor(bombs[i].x / each_cell_length) ) == bomberman.px && 3 * (Math.floor(bombs[i].y / each_cell_length) - j) == bomberman.py) {
+                            console.log("game over");
+                            //init();
+                            return;
+                        }
+
+                    }
                 }
+                console.log("bombes[" + i + "].explosion.length" + bombs[i].explosions.length);
 
 
             }
@@ -422,7 +533,7 @@ run_game = function () {
                 x: Math.round(bomberman.px / 3) * each_cell_length,
                 y: Math.round(bomberman.py / 3) * each_cell_length,
                 time: timer,
-                r: itemr,
+                r: range,
                 explosions: [],
                 mode: "pre_explosion",
                 visibility: false,
@@ -441,7 +552,7 @@ run_game = function () {
 
     $(document).keydown(function (e) {
         var key = e.which;
-        console.log("e.which : " + key);
+        //console.log("e.which : " + key);
         //We will add another clause to prevent reverse gear
         if (key == "37") d = "left";
         else if (key == "38") d = "up";
@@ -449,5 +560,5 @@ run_game = function () {
         else if (key == "40") d = "down";
         else if (key == "32") b = true;
         else d = "";
-    })
-};
+    });
+}

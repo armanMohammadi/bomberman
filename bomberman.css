@@ -40,8 +40,22 @@ body {
 	background-color: rgba(0, 0, 6, 0.97);
     visibility: hidden;
 }
-.explosion-block{
-	background-color: rgba(250, 106, 43, 0.5);
+.box-block {
+	background-color: rgba(255, 99, 59, 1);
     visibility: hidden;
 }
+
+.explosion-block{
+	background-color: rgba(250, 240, 0, 0.46);
+    visibility: hidden;
+}
+.item-range-block{
+	background-color: rgba(20, 250, 219, 0.92);
+    visibility: hidden;
+ }
+.item-teleport-block{
+	background-color: rgba(250, 34, 217, 0.95);
+    visibility: hidden;
+}
+
 
