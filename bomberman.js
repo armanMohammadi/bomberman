@@ -413,7 +413,7 @@ run_game = function () {
                 console.log("timer *** " + timer);
                 if (!bombs[i].exp) {
                     bombs[i].exp = true;
-
+                    $('#explosion-audio')[0].play();
                     for (j = 0; j <= bombs[i].r; j++) {
                         if (map[Math.floor(bombs[i].x / each_cell_length) + j][Math.floor(bombs[i].y / each_cell_length)] == "block") {
                             break;
@@ -550,6 +550,7 @@ run_game = function () {
         }
         if (b) {
             b = false;
+            $('#bomb-audio')[0].play();
             bombs.push({
                 x: Math.round(bomberman.px / 3) * each_cell_length,
                 y: Math.round(bomberman.py / 3) * each_cell_length,
@@ -564,6 +565,7 @@ run_game = function () {
 
         if ((item_range.visit == false) && (map[Math.floor(item_range.x / each_cell_length)][Math.floor(item_range.y / each_cell_length)] == "grass")) {
             if (3 * Math.floor(item_range.x / each_cell_length) == bomberman.px && 3 * Math.floor(item_range.y / each_cell_length) == bomberman.py) {
+                $('#item-audio')[0].play();
                 item_range.visit = true;
                 range += 2;
                 $('.item-range-block').css("visibility", "hidden");
@@ -571,6 +573,7 @@ run_game = function () {
         }
         if ((item_spirit.visit == false) && (map[Math.floor(item_spirit.x / each_cell_length)][Math.floor(item_spirit.y / each_cell_length)] == "grass")) {
             if (3 * Math.floor(item_spirit.x / each_cell_length) == bomberman.px && 3 * Math.floor(item_spirit.y / each_cell_length) == bomberman.py) {
+                $('#item-audio')[0].play();
                 item_spirit.visit = true;
                 spirit = true;
                 $('.item-spirit-block').css("visibility", "hidden");
